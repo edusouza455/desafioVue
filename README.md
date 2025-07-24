@@ -79,24 +79,7 @@ npm run build && npm run preview  # Produção
 | **Estado Global** | ✅ | Pinia stores |
 | **Docker** | ✅ | Multi-stage build + Nginx |
 
-## 🔧 Troubleshooting
-
-### Erro 500 na Vercel
-Se você encontrar erros 500, verifique:
-
-1. **Variáveis de ambiente** na Vercel:
-   - `NUXT_TMDB_API_KEY` deve estar configurada
-   - Use sua chave da TMDB válida
-
-2. **Logs da Vercel**: Acesse Functions > View Function Logs para mais detalhes
-
-3. **API Key válida**: Teste sua chave em https://api.themoviedb.org/3/movie/popular?api_key=SUA_CHAVE
-
-### Erro de busca
-- Problema: `[object KeyboardEvent]` na URL
-- Solução: Já corrigido - sempre passe número explícito para a página
-
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 desafioVue/
@@ -116,26 +99,24 @@ desafioVue/
 
 ## 🌐 Deploy
 
-### 🚀 Vercel (Recomendado)
+### � Docker
 
-1. **Push para GitHub**: Faça push do projeto para o GitHub
-2. **Conectar na Vercel**: Acesse [vercel.com](https://vercel.com) e conecte seu GitHub
-3. **Importar projeto**: Selecione o repositório `desafioVue`
-4. **Configurar variáveis**: Na Vercel, adicione as environment variables:
-   ```
-   NUXT_TMDB_API_KEY=sua_chave_api_tmdb
-   NUXT_TMDB_BASE_URL=https://api.themoviedb.org/3
-   NUXT_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
-   ```
-5. **Deploy automático**: A Vercel detectará automaticamente que é um projeto Nuxt e fará o deploy
+A aplicação está configurada para deploy com Docker:
 
-### 🐳 Docker
+```bash
+# Build da imagem
+docker build -t vuemovie-app .
+
+# Executar container
+docker run -p 3000:80 vuemovie-app
+```
+
+**Características:**
 - **Container otimizado** para produção
-- **Nginx** com cache e compressão gzip
+- **Nginx** com cache e compressão gzip  
 - **Multi-stage build** para menor tamanho
+- **Static generation** para melhor performance
 
-=======
->>>>>>> 5fa6e4cdb5ec511202443b2f23ec140b17feae47
 ---
 
 **Desenvolvido por**: [Eduardo Souza](https://github.com/edusouza455)  
