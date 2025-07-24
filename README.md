@@ -95,13 +95,6 @@ desafioVue/
 ├── nginx.conf        # Production server
 └── nuxt.config.ts    # Nuxt configuration
 ```
-
-## 🌐 Deploy
-
-- **Docker**: Container otimizado para produção
-- **Nginx**: Servidor com cache e compressão gzip
-- **Static Generation**: Build estático para performance
-
 ---
 
 **Desenvolvido por**: [Eduardo Souza](https://github.com/edusouza455)  
