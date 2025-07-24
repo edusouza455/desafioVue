@@ -98,9 +98,23 @@ desafioVue/
 
 ## 🌐 Deploy
 
-- **Docker**: Container otimizado para produção
-- **Nginx**: Servidor com cache e compressão gzip
-- **Static Generation**: Build estático para performance
+### 🚀 Vercel (Recomendado)
+
+1. **Push para GitHub**: Faça push do projeto para o GitHub
+2. **Conectar na Vercel**: Acesse [vercel.com](https://vercel.com) e conecte seu GitHub
+3. **Importar projeto**: Selecione o repositório `desafioVue`
+4. **Configurar variáveis**: Na Vercel, adicione as environment variables:
+   ```
+   NUXT_TMDB_API_KEY=sua_chave_api_tmdb
+   NUXT_TMDB_BASE_URL=https://api.themoviedb.org/3
+   NUXT_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
+   ```
+5. **Deploy automático**: A Vercel detectará automaticamente que é um projeto Nuxt e fará o deploy
+
+### 🐳 Docker
+- **Container otimizado** para produção
+- **Nginx** com cache e compressão gzip
+- **Multi-stage build** para menor tamanho
 
 ---
 
