@@ -95,6 +95,7 @@ desafioVue/
 ├── nginx.conf        # Production server
 └── nuxt.config.ts    # Nuxt configuration
 ```
+<<<<<<< HEAD
 
 ## 🌐 Deploy
 
@@ -116,6 +117,8 @@ desafioVue/
 - **Nginx** com cache e compressão gzip
 - **Multi-stage build** para menor tamanho
 
+=======
+>>>>>>> 5fa6e4cdb5ec511202443b2f23ec140b17feae47
 ---
 
 **Desenvolvido por**: [Eduardo Souza](https://github.com/edusouza455)  
