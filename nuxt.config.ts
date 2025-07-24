@@ -39,6 +39,17 @@ export default defineNuxtConfig({
     strict: false,
     typeCheck: false
   },
+
+  // Configuração de build estático
+  nitro: {
+    preset: 'static',
+    prerender: {
+      failOnError: false
+    }
+  },
+
+  // Desabilitar SSR para funcionalidades client-side
+  ssr: false,
   
   // Configuração de roteamento
   pages: true,
