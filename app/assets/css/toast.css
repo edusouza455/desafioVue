@@ -1,0 +1,55 @@
+/* Customização do vue-toastification para tema dark */
+:root {
+  --toastify-color-dark: #1f2937;
+  --toastify-color-success: #10b981;
+  --toastify-color-error: #ef4444;
+  --toastify-color-warning: #f59e0b;
+  --toastify-color-info: #3b82f6;
+  --toastify-color-neutral: #6b7280;
+}
+
+.Vue-Toastification__toast {
+  background-color: var(--toastify-color-dark) !important;
+  color: #f3f4f6 !important;
+  border: 1px solid #374151 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.Vue-Toastification__toast--success {
+  background-color: #064e3b !important;
+  border-color: var(--toastify-color-success) !important;
+}
+
+.Vue-Toastification__toast--error {
+  background-color: #7f1d1d !important;
+  border-color: var(--toastify-color-error) !important;
+}
+
+.Vue-Toastification__toast--warning {
+  background-color: #78350f !important;
+  border-color: var(--toastify-color-warning) !important;
+}
+
+.Vue-Toastification__toast--info {
+  background-color: #1e3a8a !important;
+  border-color: var(--toastify-color-info) !important;
+}
+
+/* Nova classe para notificações neutras */
+.Vue-Toastification__toast--default {
+  background-color: #374151 !important;
+  border-color: var(--toastify-color-neutral) !important;
+}
+
+.Vue-Toastification__progress-bar {
+  background: linear-gradient(90deg, #22c55e, #16a34a) !important;
+}
+
+.Vue-Toastification__close-button {
+  color: #9ca3af !important;
+}
+
+.Vue-Toastification__close-button:hover {
+  color: #f3f4f6 !important;
+}
