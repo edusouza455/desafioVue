@@ -79,6 +79,23 @@ npm run build && npm run preview  # Produção
 | **Estado Global** | ✅ | Pinia stores |
 | **Docker** | ✅ | Multi-stage build + Nginx |
 
+## 🔧 Troubleshooting
+
+### Erro 500 na Vercel
+Se você encontrar erros 500, verifique:
+
+1. **Variáveis de ambiente** na Vercel:
+   - `NUXT_TMDB_API_KEY` deve estar configurada
+   - Use sua chave da TMDB válida
+
+2. **Logs da Vercel**: Acesse Functions > View Function Logs para mais detalhes
+
+3. **API Key válida**: Teste sua chave em https://api.themoviedb.org/3/movie/popular?api_key=SUA_CHAVE
+
+### Erro de busca
+- Problema: `[object KeyboardEvent]` na URL
+- Solução: Já corrigido - sempre passe número explícito para a página
+
 ## 📁 Estrutura do Projeto
 
 ```
