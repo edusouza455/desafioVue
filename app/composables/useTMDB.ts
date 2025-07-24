@@ -1,109 +1,62 @@
-import type { Movie, TMDBMovie, TMDBMovieResponse, TMDBGenre } from '../types'
+import type { Movie, TMDBGenre } from '../types'
 
 export const useTMDB = () => {
   const config = useRuntimeConfig()
   
-  // Função para fazer requisições à API TMDB
-  const tmdbRequest = async <T>(endpoint: string, params: Record<string, any> = {}): Promise<T> => {
-    const url = new URL(`${config.public.tmdbBaseUrl}${endpoint}`)
-    
-    // Adicionar API key aos parâmetros
-    params.api_key = config.tmdbApiKey
-    
-    // Adicionar parâmetros à URL
-    Object.keys(params).forEach(key => {
-      if (params[key] !== undefined && params[key] !== null) {
-        url.searchParams.append(key, params[key].toString())
-      }
-    })
-
-    try {
-      const response = await $fetch(url.toString(), {
-        retry: 3,
-        retryDelay: 1000
-      }) as T
-      return response
-    } catch (error) {
-      console.error('Erro na requisição TMDB:', error)
-      throw new Error('Erro ao buscar dados de filmes')
-    }
-  }
-
-  // Converter filme TMDB para formato interno
-  const convertTMDBMovie = (tmdbMovie: TMDBMovie): Movie => {
-    return {
-      id: tmdbMovie.id,
-      title: tmdbMovie.title,
-      overview: tmdbMovie.overview,
-      poster_path: tmdbMovie.poster_path,
-      release_date: tmdbMovie.release_date,
-      vote_average: tmdbMovie.vote_average,
-      vote_count: tmdbMovie.vote_count,
-      genre_ids: tmdbMovie.genre_ids,
-      
-      // Campos legados para compatibilidade
-      description: tmdbMovie.overview,
-      rating: tmdbMovie.vote_average,
-      releaseYear: tmdbMovie.release_date ? new Date(tmdbMovie.release_date).getFullYear() : undefined,
-      posterUrl: tmdbMovie.poster_path ? `${config.public.tmdbImageBaseUrl}/w500${tmdbMovie.poster_path}` : null
-    }
-  }
-
   // Buscar filmes populares
   const getPopularMovies = async (page: number = 1): Promise<{ movies: Movie[], totalPages: number, totalResults: number }> => {
-    const response = await tmdbRequest<TMDBMovieResponse>('/movie/popular', { 
-      page,
-      language: 'pt-BR'
-    })
+    const params = new URLSearchParams()
+    params.append('page', page.toString())
+    params.append('category', 'popular')
+
+    const response = await $fetch<{ success: boolean, data: any }>(`/api/movies/discover?${params}`)
     
-    return {
-      movies: response.results.map(convertTMDBMovie),
-      totalPages: response.total_pages,
-      totalResults: response.total_results
+    if (!response.success) {
+      throw new Error('Erro ao buscar filmes populares')
     }
+    
+    return response.data
   }
 
   // Buscar filmes mais bem avaliados
   const getTopRatedMovies = async (page: number = 1): Promise<{ movies: Movie[], totalPages: number, totalResults: number }> => {
-    const response = await tmdbRequest<TMDBMovieResponse>('/movie/top_rated', { 
-      page,
-      language: 'pt-BR'
-    })
+    const params = new URLSearchParams()
+    params.append('page', page.toString())
+    params.append('category', 'top_rated')
+
+    const response = await $fetch<{ success: boolean, data: any }>(`/api/movies/discover?${params}`)
     
-    return {
-      movies: response.results.map(convertTMDBMovie),
-      totalPages: response.total_pages,
-      totalResults: response.total_results
+    if (!response.success) {
+      throw new Error('Erro ao buscar filmes mais bem avaliados')
     }
+    
+    return response.data
   }
 
   // Buscar filmes por gênero
   const getMoviesByGenre = async (genreId: number, page: number = 1): Promise<{ movies: Movie[], totalPages: number, totalResults: number }> => {
-    const response = await tmdbRequest<TMDBMovieResponse>('/discover/movie', {
-      with_genres: genreId,
-      page,
-      language: 'pt-BR',
-      sort_by: 'popularity.desc'
-    })
+    const params = new URLSearchParams()
+    params.append('page', page.toString())
+    params.append('genre', genreId.toString())
+
+    const response = await $fetch<{ success: boolean, data: any }>(`/api/movies/discover?${params}`)
     
-    return {
-      movies: response.results.map(convertTMDBMovie),
-      totalPages: response.total_pages,
-      totalResults: response.total_results
+    if (!response.success) {
+      throw new Error('Erro ao buscar filmes por gênero')
     }
+    
+    return response.data
   }
 
   // Buscar filme por ID
   const getMovieById = async (id: number): Promise<Movie> => {
-    const response = await tmdbRequest<TMDBMovie & { genres: TMDBGenre[], runtime: number }>(`/movie/${id}`, {
-      language: 'pt-BR'
-    })
+    const response = await $fetch<{ success: boolean, data: any }>(`/api/movies/${id}`)
     
-    const movie = convertTMDBMovie(response)
-    movie.genres = response.genres
-    movie.runtime = response.runtime
+    if (!response.success) {
+      throw new Error('Erro ao buscar detalhes do filme')
+    }
     
-    return movie
+    return response.data
   }
 
   // Buscar filmes com filtros
@@ -137,27 +90,28 @@ export const useTMDB = () => {
       return { movies: [], totalPages: 0, totalResults: 0 }
     }
 
-    const response = await tmdbRequest<TMDBMovieResponse>('/search/movie', {
-      query: query.trim(),
-      page,
-      language: 'pt-BR',
-      include_adult: false
-    })
+    const params = new URLSearchParams()
+    params.append('q', query.trim())
+    params.append('page', page.toString())
+
+    const response = await $fetch<{ success: boolean, data: any }>(`/api/movies/search?${params}`)
     
-    return {
-      movies: response.results.map(convertTMDBMovie),
-      totalPages: response.total_pages,
-      totalResults: response.total_results
+    if (!response.success) {
+      throw new Error('Erro ao buscar filmes')
     }
+    
+    return response.data
   }
 
   // Buscar gêneros
   const getGenres = async (): Promise<TMDBGenre[]> => {
-    const response = await tmdbRequest<{ genres: TMDBGenre[] }>('/genre/movie/list', {
-      language: 'pt-BR'
-    })
+    const response = await $fetch<{ success: boolean, data: TMDBGenre[] }>('/api/genres')
     
-    return response.genres
+    if (!response.success) {
+      throw new Error('Erro ao buscar gêneros')
+    }
+    
+    return response.data
   }
 
   // Gerar URL de imagem
@@ -179,7 +133,6 @@ export const useTMDB = () => {
     discoverMovies,
     
     // Utilitários
-    getImageUrl,
-    convertTMDBMovie
+    getImageUrl
   }
 }

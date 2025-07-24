@@ -6,13 +6,14 @@ export default defineEventHandler(async (event) => {
   const genre = query.genre as string
   const year = query.year as string
   const sortBy = query.sort_by as string || 'popularity.desc'
+  const category = query.category as string
 
   try {
     const config = useRuntimeConfig()
     const baseUrl = config.public.tmdbBaseUrl
     const apiKey = config.tmdbApiKey
 
-    console.log('API Config:', { baseUrl, hasApiKey: !!apiKey })
+    console.log('API Config:', { baseUrl, hasApiKey: !!apiKey, category, searchQuery, genre })
 
     if (!apiKey) {
       throw createError({
@@ -21,28 +22,41 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Determinar endpoint baseado na categoria ou query
+    let endpoint = '/discover/movie'
+    
+    if (category === 'popular') {
+      endpoint = '/movie/popular'
+    } else if (category === 'top_rated') {
+      endpoint = '/movie/top_rated'
+    } else if (searchQuery) {
+      endpoint = '/search/movie'
+    }
+
     // Construir parâmetros da busca
     const params = new URLSearchParams({
       api_key: apiKey,
       language: 'pt-BR',
       page: page.toString(),
-      sort_by: sortBy,
       include_adult: 'false'
     })
 
+    // Para discover/movie, adicionar sort_by
+    if (endpoint === '/discover/movie') {
+      params.append('sort_by', sortBy)
+    }
+
     // Adicionar filtros se fornecidos
-    if (genre) {
+    if (genre && endpoint === '/discover/movie') {
       params.append('with_genres', genre)
     }
     
-    if (year) {
+    if (year && endpoint === '/discover/movie') {
       params.append('year', year)
     }
 
-    // Se há uma query de busca, usar search, senão usar discover
-    const endpoint = searchQuery ? '/search/movie' : '/discover/movie'
-    
-    if (searchQuery) {
+    // Se há uma query de busca, adicionar query
+    if (searchQuery && endpoint === '/search/movie') {
       params.append('query', searchQuery)
     }
 
@@ -62,21 +76,28 @@ export default defineEventHandler(async (event) => {
     const data = await response.json()
 
     // Converter filmes para formato padrão
-    const movies = data.results.map((movie: any) => ({
-      id: movie.id,
-      title: movie.title,
-      overview: movie.overview,
-      poster_path: movie.poster_path,
-      release_date: movie.release_date,
-      vote_average: movie.vote_average,
-      vote_count: movie.vote_count,
-      genre_ids: movie.genre_ids,
-      
-      // Campos legados para compatibilidade
-      rating: movie.vote_average,
-      description: movie.overview,
-      releaseYear: movie.release_date ? new Date(movie.release_date).getFullYear() : undefined
-    }))
+    const movies = data.results.map((movie: any) => {
+      const posterUrl = movie.poster_path 
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : '/placeholder-movie.svg'
+        
+      return {
+        id: movie.id,
+        title: movie.title,
+        overview: movie.overview,
+        poster_path: movie.poster_path,
+        release_date: movie.release_date,
+        vote_average: movie.vote_average,
+        vote_count: movie.vote_count,
+        genre_ids: movie.genre_ids,
+        
+        // Campos legados para compatibilidade
+        rating: movie.vote_average,
+        description: movie.overview,
+        posterUrl: posterUrl,
+        releaseYear: movie.release_date ? new Date(movie.release_date).getFullYear() : undefined
+      }
+    })
 
     return {
       success: true,

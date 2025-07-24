@@ -48,11 +48,26 @@ export default defineNuxtConfig({
     }
   },
 
-  // Desabilitar SSR para funcionalidades client-side
-  ssr: false,
-  
   // Configuração de roteamento
   pages: true,
+
+  // Configuração do servidor de desenvolvimento
+  devServer: {
+    host: '0.0.0.0',
+    port: 3000
+  },
+
+  // Configuração do Vite
+  vite: {
+    server: {
+      hmr: {
+        clientPort: 443
+      }
+    },
+    define: {
+      global: 'globalThis'
+    }
+  },
   
   // Configuração de SEO
   app: {
