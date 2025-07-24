@@ -12,6 +12,8 @@ export default defineEventHandler(async (event) => {
     const baseUrl = config.public.tmdbBaseUrl
     const apiKey = config.tmdbApiKey
 
+    console.log('API Config:', { baseUrl, hasApiKey: !!apiKey })
+
     if (!apiKey) {
       throw createError({
         statusCode: 500,
@@ -44,9 +46,13 @@ export default defineEventHandler(async (event) => {
       params.append('query', searchQuery)
     }
 
-    const response = await fetch(`${baseUrl}${endpoint}?${params}`)
+    const url = `${baseUrl}${endpoint}?${params.toString()}`
+    console.log('Request URL:', url.replace(apiKey, '[API_KEY]'))
+
+    const response = await fetch(url)
     
     if (!response.ok) {
+      console.error('TMDB API Error:', response.status, response.statusText)
       throw createError({
         statusCode: response.status,
         statusMessage: `TMDB API error: ${response.statusText}`
@@ -86,7 +92,7 @@ export default defineEventHandler(async (event) => {
     
     throw createError({
       statusCode: 500,
-      statusMessage: 'Erro interno do servidor ao buscar filmes'
+      statusMessage: error instanceof Error ? error.message : 'Erro interno do servidor ao buscar filmes'
     })
   }
 })

@@ -1,23 +1,14 @@
 import type { Movie, TMDBMovie, TMDBMovieResponse, TMDBGenre } from '../types'
 
-// Configuração da API TMDB
-const TMDB_API_KEY = '4e44d9029b1270a757cddc766a1bcb63'
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
-const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p'
-
 export const useTMDB = () => {
-  // Headers para autenticação
-  const headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  }
-
+  const config = useRuntimeConfig()
+  
   // Função para fazer requisições à API TMDB
   const tmdbRequest = async <T>(endpoint: string, params: Record<string, any> = {}): Promise<T> => {
-    const url = new URL(`${TMDB_BASE_URL}${endpoint}`)
+    const url = new URL(`${config.public.tmdbBaseUrl}${endpoint}`)
     
     // Adicionar API key aos parâmetros
-    params.api_key = TMDB_API_KEY
+    params.api_key = config.tmdbApiKey
     
     // Adicionar parâmetros à URL
     Object.keys(params).forEach(key => {
@@ -28,7 +19,6 @@ export const useTMDB = () => {
 
     try {
       const response = await $fetch(url.toString(), {
-        headers,
         retry: 3,
         retryDelay: 1000
       }) as T
@@ -55,7 +45,7 @@ export const useTMDB = () => {
       description: tmdbMovie.overview,
       rating: tmdbMovie.vote_average,
       releaseYear: tmdbMovie.release_date ? new Date(tmdbMovie.release_date).getFullYear() : undefined,
-      posterUrl: tmdbMovie.poster_path ? `${TMDB_IMAGE_BASE_URL}/w500${tmdbMovie.poster_path}` : null
+      posterUrl: tmdbMovie.poster_path ? `${config.public.tmdbImageBaseUrl}/w500${tmdbMovie.poster_path}` : null
     }
   }
 
@@ -175,7 +165,7 @@ export const useTMDB = () => {
     if (!path) {
       return '/placeholder-movie.svg'
     }
-    return `${TMDB_IMAGE_BASE_URL}/${size}${path}`
+    return `${config.public.tmdbImageBaseUrl}/${size}${path}`
   }
 
   return {
@@ -190,9 +180,6 @@ export const useTMDB = () => {
     
     // Utilitários
     getImageUrl,
-    convertTMDBMovie,
-    
-    // Constantes
-    TMDB_IMAGE_BASE_URL
+    convertTMDBMovie
   }
 }

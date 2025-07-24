@@ -20,14 +20,14 @@
               <input 
                 v-model="searchQuery"
                 @input="onSearchInput"
-                @keydown.enter="performSearch"
+                @keydown.enter.prevent="performSearch(1)"
                 type="text" 
                 placeholder="Digite o nome do filme, ator ou diretor..."
                 class="w-full pl-12 pr-24 py-4 bg-dark-800 text-white rounded-xl border border-dark-700 focus:outline-none focus:ring-2 focus:ring-vue-500 focus:border-vue-500 text-lg"
                 :disabled="isLoading"
               >
               <button 
-                @click="performSearch"
+                @click="performSearch(1)"
                 :disabled="isLoading || !searchQuery.trim()"
                 class="absolute right-2 top-2 bottom-2 px-6 bg-vue-600 text-white rounded-lg hover:bg-vue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
               >
@@ -383,7 +383,6 @@ const searchSuggestions = ref([
   'Senhor dos Anéis', 'Pixar', 'Disney', 'DC Comics'
 ])
 
-// Debounce para busca automática
 let searchTimeout: NodeJS.Timeout | null = null
 
 // Métodos
@@ -392,7 +391,6 @@ const performSearch = async (page: number = 1) => {
     isLoading.value = true
     error.value = null
     
-    // Se há filtros ativos, usar discoverMovies, senão usar busca normal
     if (hasActiveFilters.value || (!searchQuery.value.trim() && (selectedGenre.value || selectedYear.value))) {
       const filters = {
         query: searchQuery.value.trim(),
@@ -456,9 +454,9 @@ const onSearchInput = () => {
   
   searchTimeout = setTimeout(() => {
     if (searchQuery.value.trim().length >= 3) {
-      performSearch()
+      performSearch(1)
     } else if (searchQuery.value.trim().length === 0) {
-      loadPopularMovies()
+      loadPopularMovies(1)
     }
   }, 500)
 }
@@ -495,7 +493,7 @@ const clearFilters = () => {
   selectedGenre.value = ''
   selectedYear.value = ''
   sortBy.value = 'popularity.desc'
-  performSearch()
+  performSearch(1)
 }
 
 const clearSearch = () => {
